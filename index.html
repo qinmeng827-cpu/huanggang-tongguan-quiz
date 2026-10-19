@@ -15,31 +15,31 @@
     <!-- 首页 -->
     <section id="screen-home" class="screen active">
       <div class="hero">
-        <h1>黄冈通关考<br /><span class="h1-subline">答对就出发！</span></h1>
+        <div class="badge">黄冈文旅 · 引流答题</div>
+        <h1>黄冈通关考<br />答对就出发！</h1>
+        <p class="sub">热身一题 · 十关巡礼 · 通关兑礼</p>
 
-        <div class="field field-compact">
-          <label for="phone">核验手机号（可选）</label>
-          <input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="请输入11位手机号" autocomplete="tel" />
-          <p class="hint">写入通关凭证，不发短信；正式核销以现场为准。</p>
+        <div class="rules">
+          <h3>📋 活动规则摘要</h3>
+          <ul>
+            <li>共 <strong>11 题</strong>：1 道热身题 ＋ 10 道关卡题（对应十个县市区）</li>
+            <li>每关从 3 道备题中<strong>随机抽 1 道</strong></li>
+            <li>答题时间：<strong>11月1日—11月20日</strong>（共20天）</li>
+            <li>答对 ≥7 题可领 1 份礼品；≥9 题 2 份；全对 3 份</li>
+            <li>礼品总额一万份；每日释放 <strong>500 份</strong>（各县市区 50 份），当日清零不顺延</li>
+            <li>每账号 / 设备<strong>仅一次</strong>答题资格</li>
+            <li>礼品须<strong>本人到对应县市区核销点现场领取</strong>，不邮寄；兑礼截至 <strong>2026年12月30日24:00</strong></li>
+            <li>领取时出示通关凭证、转发凭证（话题 <em>#黄冈通关考答对就出发#大美黄冈此心安处</em>）及手机号</li>
+          </ul>
         </div>
 
-        <button type="button" class="btn btn-primary btn-cta" id="btn-start">开始通关</button>
+        <div class="field">
+          <label for="phone">核验手机号（演示用，可选）</label>
+          <input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="请输入11位手机号" autocomplete="tel" />
+          <p class="hint">仅写入通关凭证，不发送短信；正式核销以现场登记为准。</p>
+        </div>
 
-        <details class="rules-fold">
-          <summary>查看活动规则</summary>
-          <div class="rules">
-            <ul>
-              <li>共 <strong>11 题</strong>：1 道热身题 ＋ 10 道关卡题（对应十个县市区）</li>
-              <li>每关从 3 道备题中<strong>随机抽 1 道</strong></li>
-              <li>答题时间：<strong>11月1日—11月20日</strong>（共20天）</li>
-              <li>答对 ≥7 题可领 1 份礼品；≥9 题 2 份；全对 3 份</li>
-              <li>礼品总额一万份；每日释放 <strong>500 份</strong>（各县市区 50 份），当日清零不顺延</li>
-              <li>每账号 / 设备<strong>仅一次</strong>答题资格</li>
-              <li>礼品须<strong>本人到对应县市区核销点现场领取</strong>，不邮寄；兑礼截至 <strong>2026年12月30日24:00</strong></li>
-              <li>领取时出示通关凭证、转发凭证（话题 <em>#黄冈通关考答对就出发#大美黄冈此心安处</em>）及手机号</li>
-            </ul>
-          </div>
-        </details>
+        <button type="button" class="btn btn-primary" id="btn-start">开始答题</button>
         <div id="locked-note" class="locked-note" style="display:none"></div>
         <button type="button" class="btn btn-ghost danger" id="btn-demo-reset">演示重置（清除通关记录与手机号）</button>
       </div>

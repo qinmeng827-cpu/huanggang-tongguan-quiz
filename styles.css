@@ -1,12 +1,3 @@
-/* 大标题书法体：马善政子集（仅标题用字，OFL） */
-@font-face {
-  font-family: "Ma Shan Zheng";
-  src: url("fonts/MaShanZheng-title.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* 黄冈通关考 — mobile-first 暖橙秋色（赏秋红叶感） */
 :root {
   /* 变量名保留兼容 class；取值改为暖橙／琥珀／米奶油 */
@@ -25,7 +16,7 @@
   --bad: #b91c1c;
   --bad-bg: #fee2e2;
   --white: #ffffff;
-  --shadow: 0 10px 32px rgba(67, 20, 7, 0.28);
+  --shadow: 0 8px 28px rgba(67, 20, 7, 0.12);
   --radius: 16px;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
@@ -38,7 +29,6 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
     "Noto Sans SC", system-ui, -apple-system, sans-serif;
-  /* 答题页保持干净暖色底；海报只铺首页／结果／凭证 */
   background: linear-gradient(180deg, #5c1e0a 0%, #9a3412 38%, #c2410c 100%);
   color: var(--ink);
   min-height: 100dvh;
@@ -56,30 +46,6 @@ body {
 
 .screen { display: none; animation: fadeIn 0.35s ease; }
 .screen.active { display: block; }
-
-/* 地标拼贴海报：仅首页＋结果＋凭证（答题页不铺，保选项对比度） */
-#screen-home.active,
-#screen-result.active,
-#screen-claim.active {
-  position: relative;
-  min-height: calc(100dvh - var(--safe-t) - var(--safe-b) - 24px);
-  margin: -12px -14px 0;
-  padding: 12px 14px 8px;
-  background-color: #5c1e0a;
-  background-image:
-    linear-gradient(180deg, rgba(67, 20, 7, 0.52) 0%, rgba(92, 30, 10, 0.4) 45%, rgba(154, 52, 18, 0.48) 100%),
-    url("assets/bg-poster.jpg?v=poster8");
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  border-radius: 0;
-}
-#screen-quiz.active,
-#screen-gifts.active {
-  /* 干净暖色环境，不铺海报 */
-  background: transparent;
-}
-
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -118,21 +84,12 @@ body {
 }
 
 .hero h1 {
-  font-family: "Ma Shan Zheng", "KaiTi", "STKaiti", serif;
-  font-size: clamp(22px, 6vw, 30px);
-  font-weight: 400;
+  font-size: 26px;
+  font-weight: 800;
   color: var(--red-deep);
   letter-spacing: 0.06em;
   line-height: 1.35;
-  margin: 8px 0 18px;
-  max-width: 100%;
-  word-break: keep-all;
-}
-.hero h1 .h1-subline {
-  display: block;
-  margin-top: 2px;
-  letter-spacing: 0.1em;
-  white-space: nowrap;
+  margin-bottom: 6px;
 }
 
 .hero .sub {
@@ -261,13 +218,10 @@ button[hidden],
   margin-top: 18px;
   font-size: 12px;
   color: #fff7ed;
-  text-shadow: 0 1px 3px rgba(67, 20, 7, 0.75);
+  text-shadow: 0 1px 2px rgba(67, 20, 7, 0.45);
   text-align: center;
   line-height: 1.6;
-  padding: 10px 12px;
-  background: rgba(67, 20, 7, 0.35);
-  border-radius: 12px;
-  backdrop-filter: blur(4px);
+  padding: 0 8px;
 }
 
 /* —— 答题 —— */
@@ -587,7 +541,7 @@ button[hidden],
 }
 
 @media (max-width: 360px) {
-  .hero h1 { font-size: clamp(20px, 5.8vw, 26px); letter-spacing: 0.04em; }
+  .hero h1 { font-size: 22px; }
   .q-text { font-size: 16px; }
   .hero { padding: 22px 16px 20px; }
   .quiz-card, .result-card { padding-left: 14px; padding-right: 14px; }
@@ -773,184 +727,4 @@ button[hidden],
   word-break: break-word;
   font-size: 13px;
   font-weight: 600;
-}
-
-
-/* —— 本轮抛光：折叠规则 / CTA / 关卡 / 票根 —— */
-.btn-cta {
-  font-size: 18px;
-  padding: 18px 20px;
-  min-height: 56px;
-  box-shadow: 0 8px 28px rgba(234, 88, 12, 0.5);
-  margin-bottom: 14px;
-  letter-spacing: 0.14em;
-}
-
-.field-compact {
-  margin-bottom: 12px;
-}
-.field-compact label { font-weight: 500; color: var(--muted); }
-.field-compact .hint { font-size: 10px; }
-
-.rules-fold {
-  text-align: left;
-  margin-bottom: 8px;
-  border-radius: 12px;
-  background: var(--cream-dark);
-  overflow: hidden;
-}
-.rules-fold > summary {
-  list-style: none;
-  cursor: pointer;
-  padding: 12px 16px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--red-deep);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-.rules-fold > summary::-webkit-details-marker { display: none; }
-.rules-fold > summary::after {
-  content: "▾";
-  font-size: 12px;
-  color: var(--gold);
-  transition: transform 0.2s;
-}
-.rules-fold[open] > summary::after { transform: rotate(180deg); }
-.rules-fold .rules {
-  margin: 0;
-  border-radius: 0;
-  padding-top: 0;
-  background: transparent;
-}
-.rules-fold .rules ul { padding-bottom: 4px; }
-
-.progress-bar {
-  height: 10px;
-  background: #fed7aa;
-  border-radius: 999px;
-  overflow: hidden;
-  margin-bottom: 12px;
-  box-shadow: inset 0 1px 2px rgba(67, 20, 7, 0.12);
-}
-.progress-bar .fill {
-  box-shadow: 0 0 8px rgba(234, 88, 12, 0.45);
-}
-
-.meta {
-  background: linear-gradient(135deg, #fff7ed, #ffedd5);
-  border: 1.5px solid #fdba74;
-  border-radius: 12px;
-  padding: 10px 12px;
-  margin-bottom: 14px;
-}
-.gate-tag {
-  font-size: 14px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  box-shadow: 0 2px 8px rgba(154, 52, 18, 0.25);
-}
-.step-num {
-  font-size: 15px;
-  color: var(--red-deep);
-  font-weight: 800;
-  letter-spacing: 0.04em;
-}
-
-.options { gap: 12px; }
-.opt {
-  padding: 16px 16px;
-  border-radius: 16px;
-  border-width: 2.5px;
-  box-shadow: 0 2px 8px rgba(67, 20, 7, 0.06);
-}
-.opt.selected {
-  border-color: var(--red);
-  background: #ffedd5;
-  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.18);
-}
-.opt.correct {
-  border-color: #3f6212;
-  background: #d9f99d;
-  box-shadow: 0 0 0 3px rgba(63, 98, 18, 0.2);
-}
-.opt.wrong {
-  border-color: #b91c1c;
-  background: #fecaca;
-  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.18);
-}
-
-.explain {
-  font-size: 12px;
-  padding: 12px 12px;
-  border-left: 4px solid transparent;
-}
-.explain.ok {
-  background: #f0fdf4;
-  color: #166534;
-  border-left-color: #3f6212;
-}
-.explain.bad {
-  background: #fef2f2;
-  color: #991b1b;
-  border-left-color: #b91c1c;
-}
-.explain .title { font-size: 13px; margin-bottom: 6px; }
-.explain .body { font-size: 12px; line-height: 1.5; }
-
-.voucher {
-  position: relative;
-  background:
-    linear-gradient(135deg, #fffbeb 0%, #ffffff 40%, #fff7ed 100%);
-  border: 2px solid #d97706;
-  border-radius: 16px;
-  padding: 18px 16px 14px;
-  box-shadow:
-    0 0 0 4px rgba(217, 119, 6, 0.12),
-    0 8px 24px rgba(67, 20, 7, 0.1);
-}
-.voucher::before,
-.voucher::after {
-  content: "";
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  height: 0;
-  border-top: 1.5px dashed #fbbf24;
-  pointer-events: none;
-}
-.voucher::before { top: 8px; }
-.voucher::after { bottom: 8px; }
-.voucher h4 {
-  font-size: 14px;
-  color: var(--red-deep);
-  letter-spacing: 0.18em;
-  margin-bottom: 12px;
-  font-weight: 800;
-}
-.voucher .code {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--red-deep);
-  letter-spacing: 0.08em;
-}
-
-.share-box .hashtag {
-  border: 1.5px dashed var(--gold);
-}
-
-/* 结果页话题按钮更靠拇指区：抬一点主按钮权重 */
-#screen-result .btn-row {
-  position: sticky;
-  bottom: calc(8px + var(--safe-b));
-  padding-top: 8px;
-  background: linear-gradient(180deg, transparent, var(--cream) 28%);
-  z-index: 2;
-}
-#screen-result .btn-gold {
-  min-height: 52px;
-  font-size: 16px;
 }
