@@ -200,8 +200,10 @@ button[hidden],
 
 .btn-ghost.danger {
   color: var(--bad);
-  border-color: #fecaca;
-  font-size: 12px;
+  border-color: #f87171;
+  background: rgba(254, 226, 226, 0.55);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .locked-note {
