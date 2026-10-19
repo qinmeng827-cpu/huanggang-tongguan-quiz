@@ -43,6 +43,8 @@ huanggang-tongguan-quiz/
 └── README.md
 ```
 
+音效为 SFXMint learning pack（CC0），页面缓存版本 `?v=sfx4`。
+
 ## localStorage 键
 
 | 键 | 用途 |
