@@ -1031,16 +1031,10 @@
     $("#btn-copy-voucher").onclick = copyVoucher;
     const demoBtn = $("#btn-demo-reset");
     if (demoBtn) {
-      const host = (location.hostname || "").toLowerCase();
-      const isPublicHost =
-        host.endsWith("github.io") ||
-        host.endsWith("githubusercontent.com");
-      if (isPublicHost) {
-        demoBtn.hidden = true;
-        demoBtn.style.display = "none";
-      } else {
-        demoBtn.onclick = demoReset;
-      }
+      // 梦要求：公网也保留演示重置，方便手机反复试玩（正式上线前可再藏）
+      demoBtn.hidden = false;
+      demoBtn.style.display = "";
+      demoBtn.onclick = demoReset;
     }
     $("#btn-back-home").onclick = renderHome;
 
