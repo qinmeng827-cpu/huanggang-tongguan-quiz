@@ -1,0 +1,3 @@
+Ma Shan Zheng — SIL Open Font License 1.1
+Source: https://github.com/google/fonts/tree/main/ofl/mashanzheng
+This folder ships a glyph-subset woff2 for the quiz title only.
