@@ -16,10 +16,10 @@
   /* SFXMint learning pack, CC0 */
   const Sfx = (function () {
     const SRC = {
-      tap: "assets/sfx/tap.mp3?v=sfx4",
-      correct: "assets/sfx/correct.mp3?v=sfx4",
-      wrong: "assets/sfx/wrong.mp3?v=sfx4",
-      whoosh: "assets/sfx/whoosh.mp3?v=sfx4",
+      tap: "assets/sfx/tap.mp3?v=sfx5",
+      correct: "assets/sfx/correct.mp3?v=sfx5",
+      wrong: "assets/sfx/wrong.mp3?v=sfx5",
+      whoosh: "assets/sfx/whoosh.mp3?v=sfx5",
     };
     const VOLUME = 0.62;
     const primed = {};
