@@ -393,20 +393,43 @@ button[hidden],
 .tier-3 { background: linear-gradient(135deg, #fde68a, #f59e0b); color: #78350f; }
 
 .voucher {
-  background: var(--white);
-  border: 2px dashed var(--gold);
-  border-radius: 14px;
-  padding: 16px;
+  position: relative;
+  background:
+    radial-gradient(circle at 0 50%, transparent 7px, #fffbeb 7.5px) left / 14px 100% no-repeat,
+    radial-gradient(circle at 100% 50%, transparent 7px, #fffbeb 7.5px) right / 14px 100% no-repeat,
+    linear-gradient(180deg, #fffbeb 0%, #ffffff 45%, #fff7ed 100%);
+  border: 2px solid #d97706;
+  border-radius: 16px;
+  padding: 20px 18px 16px;
   text-align: left;
   margin-bottom: 16px;
+  box-shadow:
+    0 0 0 3px rgba(217, 119, 6, 0.14),
+    0 10px 28px rgba(67, 20, 7, 0.12);
+  overflow: hidden;
 }
 
+.voucher::before,
+.voucher::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  height: 0;
+  border-top: 1.5px dashed #f59e0b;
+  pointer-events: none;
+  opacity: 0.85;
+}
+.voucher::before { top: 10px; }
+.voucher::after { bottom: 10px; }
+
 .voucher h4 {
-  font-size: 13px;
-  color: var(--gold);
-  letter-spacing: 0.1em;
-  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--red-deep);
+  letter-spacing: 0.18em;
+  margin-bottom: 12px;
   text-align: center;
+  font-weight: 800;
 }
 
 .voucher .row {
@@ -423,8 +446,9 @@ button[hidden],
 .voucher .v { color: var(--ink); font-weight: 600; text-align: right; word-break: break-all; }
 .voucher .code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 15px;
-  letter-spacing: 0.06em;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   color: var(--red-deep);
 }
 
@@ -538,8 +562,17 @@ button[hidden],
 
 .quiz-actions .btn + .btn { margin-top: 8px; }
 
-.voucher {
-  box-shadow: inset 0 0 0 1px rgba(217, 119, 6, 0.28);
+.voucher-ticket .row .k {
+  font-size: 12px;
+}
+.voucher-ticket .seal-hint {
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: rgba(185, 28, 28, 0.55);
+  font-weight: 700;
 }
 
 @media (max-width: 360px) {
@@ -831,4 +864,21 @@ button[hidden],
   opacity: 0.72;
   background: transparent !important;
   border-color: #fecaca !important;
+}
+
+
+/* —— UI抛光②：凭证票根金边／撕边感 —— */
+.share-box {
+  border: 1.5px dashed rgba(217, 119, 6, 0.55);
+  background: linear-gradient(180deg, #fff7ed, #ffedd5);
+}
+.share-box .hashtag {
+  display: inline-block;
+  margin: 6px 0;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px dashed var(--gold);
+  color: var(--red-deep);
+  font-weight: 700;
 }

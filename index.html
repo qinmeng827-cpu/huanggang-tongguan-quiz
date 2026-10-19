@@ -7,7 +7,7 @@
   <meta name="description" content="黄冈通关考　答对就出发！——热身题＋十关文旅知识答题，通关兑礼。" />
   <title>黄冈通关考　答对就出发！</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=polish1" />
+  <link rel="stylesheet" href="styles.css?v=polish2" />
 </head>
 <body>
   <div id="app">
@@ -81,7 +81,7 @@
         <div class="score-line" id="score-line">0 <span>/ 11 题正确</span></div>
         <div class="tier-badge tier-0" id="tier-badge">—</div>
 
-        <div class="voucher">
+        <div class="voucher voucher-ticket">
           <h4>✦ 通关凭证 ✦</h4>
           <div class="row"><span class="k">凭证码</span><span class="v code" id="v-code">—</span></div>
           <div class="row"><span class="k">得分</span><span class="v" id="v-score">—</span></div>
@@ -89,6 +89,7 @@
           <div class="row"><span class="k">手机号</span><span class="v" id="v-phone">—</span></div>
           <div class="row"><span class="k">生成时间</span><span class="v" id="v-date">—</span></div>
           <div class="row" id="v-gifts-row" style="display:none"><span class="k">已选礼品</span><span class="v" id="v-gifts">—</span></div>
+          <span class="seal-hint">黄冈文旅 · 通关凭证</span>
         </div>
         <p class="gift-history-tip" id="gift-history-tip" style="display:none"></p>
 
@@ -152,13 +153,14 @@
           逾期未到场领取的，名额自动失效，不予补发、不予折现。礼品仅限本人现场自取，不邮寄。领取须出示通关凭证、转发凭证并核验手机号。
         </p>
 
-        <div class="voucher" id="claim-voucher-box">
+        <div class="voucher voucher-ticket" id="claim-voucher-box">
           <h4>✦ 通关凭证 ✦</h4>
           <div class="row"><span class="k">凭证码</span><span class="v code" id="c-code">—</span></div>
           <div class="row"><span class="k">得分</span><span class="v" id="c-score">—</span></div>
           <div class="row"><span class="k">兑礼资格</span><span class="v" id="c-gift">—</span></div>
           <div class="row"><span class="k">手机号</span><span class="v" id="c-phone">—</span></div>
           <div class="row"><span class="k">生成时间</span><span class="v" id="c-date">—</span></div>
+          <span class="seal-hint">黄冈文旅 · 通关凭证</span>
         </div>
 
         <div class="detail-list" id="claim-detail-list" style="display:none"></div>
@@ -183,6 +185,6 @@
   </div>
 
   <div class="toast" id="toast" role="status"></div>
-  <script src="app.js?v=polish1"></script>
+  <script src="app.js?v=polish2"></script>
 </body>
 </html>
