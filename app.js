@@ -13,12 +13,13 @@
 
 
   /* ========== Sfx (sample MP3, no BGM; always on) ========== */
+  /* SFXMint learning pack, CC0 */
   const Sfx = (function () {
     const SRC = {
-      tap: "assets/sfx/tap.mp3",
-      correct: "assets/sfx/correct.mp3",
-      wrong: "assets/sfx/wrong.mp3",
-      whoosh: "assets/sfx/whoosh.mp3",
+      tap: "assets/sfx/tap.mp3?v=sfx4",
+      correct: "assets/sfx/correct.mp3?v=sfx4",
+      wrong: "assets/sfx/wrong.mp3?v=sfx4",
+      whoosh: "assets/sfx/whoosh.mp3?v=sfx4",
     };
     const VOLUME = 0.62;
     const primed = {};

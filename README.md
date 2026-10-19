@@ -39,6 +39,7 @@ huanggang-tongguan-quiz/
 ├── index.html    # 页面结构
 ├── styles.css    # 移动优先样式（深红 / 金 / 米白）
 ├── app.js        # 题库、抽题、计分、凭证、本地存储
+├── assets/sfx/   # SFXMint learning pack, CC0（tap / correct / wrong / whoosh）
 └── README.md
 ```
 
