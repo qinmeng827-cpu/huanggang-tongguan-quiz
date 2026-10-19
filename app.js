@@ -12,91 +12,94 @@
   };
 
 
-  /* ========== Sfx (Web Audio, no BGM; always on) ========== */
+  /* ========== Sfx (sample MP3, no BGM; always on) ========== */
   const Sfx = (function () {
-    let ctx = null;
+    const SRC = {
+      tap: "assets/sfx/tap.mp3",
+      correct: "assets/sfx/correct.mp3",
+      wrong: "assets/sfx/wrong.mp3",
+      whoosh: "assets/sfx/whoosh.mp3",
+    };
+    const VOLUME = 0.62;
+    const primed = {};
 
-    function getContext() {
-      if (ctx) return ctx;
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return null;
+    function make(src) {
+      const a = new Audio();
+      a.preload = "auto";
+      a.src = src;
+      a.volume = VOLUME;
+      a.setAttribute("playsinline", "true");
+      a.setAttribute("webkit-playsinline", "true");
       try {
-        ctx = new AC();
-      } catch (e) {
-        ctx = null;
-      }
-      return ctx;
-    }
-
-    function unlock() {
-      try {
-        const c = getContext();
-        if (!c) return;
-        if (c.state === "suspended") {
-          c.resume().catch(function () {});
-        }
+        a.load();
       } catch (e) {}
+      return a;
     }
 
-    function tone(c, freq, type, t0, dur, peak, endFreq) {
-      const osc = c.createOscillator();
-      const g = c.createGain();
-      osc.type = type || "sine";
-      osc.frequency.setValueAtTime(freq, t0);
-      if (endFreq != null) {
-        osc.frequency.exponentialRampToValueAtTime(Math.max(1, endFreq), t0 + dur);
-      }
-      g.gain.setValueAtTime(0.0001, t0);
-      g.gain.exponentialRampToValueAtTime(peak, t0 + 0.012);
-      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      osc.connect(g);
-      g.connect(c.destination);
-      osc.start(t0);
-      osc.stop(t0 + dur + 0.02);
+    Object.keys(SRC).forEach(function (name) {
+      primed[name] = make(SRC[name]);
+    });
+
+    const live = [];
+
+    // WeChat / iOS: play each preloaded file inside the first user gesture, then pause.
+    // Primers are never reused for audible playback, so the later pause cannot cut a real sound.
+    function unlock() {
+      Object.keys(primed).forEach(function (name) {
+        const a = primed[name];
+        if (a.dataset.unlocked === "1" || a.dataset.unlocking === "1") return;
+        a.dataset.unlocking = "1";
+        try {
+          a.volume = 0;
+          const p = a.play();
+          const finish = function () {
+            try {
+              a.pause();
+              a.currentTime = 0;
+            } catch (e) {}
+            a.volume = VOLUME;
+            a.dataset.unlocked = "1";
+          };
+          if (p && typeof p.then === "function") {
+            p.then(finish).catch(function () {
+              a.volume = VOLUME;
+              a.dataset.unlocking = "";
+            });
+          } else {
+            finish();
+          }
+        } catch (e) {
+          a.dataset.unlocking = "";
+        }
+      });
     }
 
-    function noiseWhoosh(c, t0) {
-      const len = Math.floor(c.sampleRate * 0.18);
-      const buf = c.createBuffer(1, len, c.sampleRate);
-      const data = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) {
-        data[i] = (Math.random() * 2 - 1) * (1 - i / len);
-      }
-      const src = c.createBufferSource();
-      src.buffer = buf;
-      const filter = c.createBiquadFilter();
-      filter.type = "bandpass";
-      filter.frequency.setValueAtTime(1800, t0);
-      filter.frequency.exponentialRampToValueAtTime(400, t0 + 0.18);
-      filter.Q.value = 0.8;
-      const g = c.createGain();
-      g.gain.setValueAtTime(0.0001, t0);
-      g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
-      src.connect(filter);
-      filter.connect(g);
-      g.connect(c.destination);
-      src.start(t0);
-      src.stop(t0 + 0.2);
+    function start(node) {
+      node.volume = VOLUME;
+      node.muted = false;
+      try {
+        node.currentTime = 0;
+      } catch (e) {}
+      live.push(node);
+      const drop = function () {
+        const i = live.indexOf(node);
+        if (i >= 0) live.splice(i, 1);
+      };
+      node.addEventListener("ended", drop);
+      node.addEventListener("error", drop);
+      const p = node.play();
+      if (p && typeof p.catch === "function") p.catch(drop);
     }
 
     function play(type) {
+      const base = primed[type];
+      if (!base) return;
       try {
         unlock();
-        const c = getContext();
-        if (!c) return;
-        const t0 = c.currentTime;
-        if (type === "tap") {
-          tone(c, 880, "triangle", t0, 0.05, 0.08);
-        } else if (type === "correct") {
-          tone(c, 784, "sine", t0, 0.12, 0.14);
-          tone(c, 1175, "sine", t0 + 0.07, 0.16, 0.12);
-        } else if (type === "wrong") {
-          tone(c, 180, "sine", t0, 0.16, 0.16, 120);
-        } else if (type === "whoosh") {
-          noiseWhoosh(c, t0);
-          tone(c, 520, "triangle", t0, 0.14, 0.05, 220);
-        }
+        // Clone so overlapping taps each keep their own element.
+        const clone = base.cloneNode();
+        if (!clone.getAttribute("src")) clone.src = SRC[type];
+        start(clone);
       } catch (e) {}
     }
 
