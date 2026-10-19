@@ -1006,7 +1006,19 @@
     $("#btn-start").onclick = startQuiz;
     $("#btn-copy-tag").onclick = copyHashtag;
     $("#btn-copy-voucher").onclick = copyVoucher;
-    $("#btn-demo-reset").onclick = demoReset;
+    const demoBtn = $("#btn-demo-reset");
+    if (demoBtn) {
+      const host = (location.hostname || "").toLowerCase();
+      const isPublicHost =
+        host.endsWith("github.io") ||
+        host.endsWith("githubusercontent.com");
+      if (isPublicHost) {
+        demoBtn.hidden = true;
+        demoBtn.style.display = "none";
+      } else {
+        demoBtn.onclick = demoReset;
+      }
+    }
     $("#btn-back-home").onclick = renderHome;
 
     const pickBtn = $("#btn-pick-gifts");
