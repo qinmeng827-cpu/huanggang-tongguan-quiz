@@ -7,7 +7,7 @@
   <meta name="description" content="黄冈通关考　答对就出发！——热身题＋十关文旅知识答题，通关兑礼。" />
   <title>黄冈通关考　答对就出发！</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=polish3" />
+  <link rel="stylesheet" href="styles.css?v=scenic1" />
 </head>
 <body>
   <div id="app">
@@ -64,6 +64,7 @@
             <button type="button" class="btn btn-primary" id="sfx-prompt-on">开启音效</button>
           </div>
         </div>
+        <p id="demo-dongpo-note" class="demo-dongpo-note" hidden>东坡关实景样例：按题库顺序作答 3 题，可重复试看实景。</p>
         <button type="button" class="btn btn-primary btn-cta" id="btn-start">开始答题</button>
         <button type="button" class="btn btn-ghost danger btn-demo-quiet" id="btn-demo-reset">演示重置</button>
         <div id="locked-note" class="locked-note" style="display:none"></div>
@@ -216,6 +217,10 @@
   </div>
 
   <div class="toast" id="toast" role="status"></div>
-  <script src="app.js?v=polish3"></script>
+  <div id="photo-lightbox" class="photo-lightbox" hidden>
+    <button type="button" class="lb-close" id="lb-close" aria-label="关闭">×</button>
+    <img id="lb-img" alt="东坡赤壁实景" />
+  </div>
+  <script src="app.js?v=scenic1"></script>
 </body>
 </html>

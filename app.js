@@ -228,6 +228,7 @@
           answer: 1,
           explain:
             "公元1082年，被贬黄州的苏东坡泛舟赤壁，写下《前赤壁赋》《后赤壁赋》与《念奴娇·赤壁怀古》。黄州是苏东坡文学创作的高峰之地，四年零四个月间留下七百余篇作品。今天的黄冈东坡赤壁景区，正是当年「大江东去」的诞生地。",
+          photo: "assets/scenic/dongpo-1.jpg",
         },
         {
           q: "苏东坡贬谪黄州期间在东坡开荒筑室，并自号什么？",
@@ -235,6 +236,7 @@
           answer: 2,
           explain:
             "苏东坡贬谪黄州期间，在城东荒坡开荒种地、筑「雪堂」定居，并自号「东坡居士」。黄州成就了苏东坡，也因他留下延续千年的文脉，今黄冈东坡赤壁、遗爱湖等地仍留有他的足迹。",
+          photo: "assets/scenic/dongpo-2.jpg",
         },
         {
           q: "「大江东去，浪淘尽，千古风流人物」出自苏东坡哪首词？",
@@ -242,6 +244,7 @@
           answer: 0,
           explain:
             "这首词写于黄州赤壁，被誉为「千古绝唱」，也让黄州赤壁成为与三国赤壁齐名的文化地标。今黄冈东坡赤壁景区即因此得名，是黄州最核心的文化打卡地。",
+          photo: "assets/scenic/dongpo-3.jpg",
         },
       ],
     },
@@ -539,6 +542,17 @@
   function pickRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
+  function isDemoDongpo() {
+    try {
+      return new URLSearchParams(window.location.search).get("demo") === "dongpo";
+    } catch (e) {
+      return false;
+    }
+  }
+  function photoOf(item) {
+    if (!item) return "";
+    return item.photo || item.img || "";
+  }
   function pad(n) {
     return String(n).padStart(2, "0");
   }
@@ -586,32 +600,62 @@
     });
   }
 
+  function deckQuestion(meta, item) {
+    const q = {
+      id: meta.id,
+      gate: meta.gate,
+      gateFull: meta.gateFull,
+      place: meta.place || "",
+      q: item.q,
+      options: item.options.slice(),
+      answer: item.answer,
+      explain: item.explain,
+    };
+    const photo = photoOf(item);
+    if (photo) q.photo = photo;
+    return shuffleQuestion(q);
+  }
+
   function buildDeck() {
+    if (isDemoDongpo()) {
+      const lv = LEVELS.find(function (l) {
+        return l.gate === "东坡关";
+      });
+      return lv.bank.map(function (item, i) {
+        return deckQuestion(
+          {
+            id: "dongpo-" + i,
+            gate: lv.gate,
+            gateFull: lv.gate + "（" + lv.place + "）",
+            place: lv.place,
+          },
+          item
+        );
+      });
+    }
     const deck = [
-      shuffleQuestion({
-        id: "warmup",
-        gate: WARMUP.gate,
-        gateFull: WARMUP.gateFull,
-        place: "",
-        q: WARMUP.q,
-        options: WARMUP.options.slice(),
-        answer: WARMUP.answer,
-        explain: WARMUP.explain,
-      }),
+      deckQuestion(
+        {
+          id: "warmup",
+          gate: WARMUP.gate,
+          gateFull: WARMUP.gateFull,
+          place: "",
+        },
+        WARMUP
+      ),
     ];
     LEVELS.forEach((lv, i) => {
       const item = pickRandom(lv.bank);
       deck.push(
-        shuffleQuestion({
-          id: "L" + (i + 1),
-          gate: lv.gate,
-          gateFull: lv.gate + "（" + lv.place + "）",
-          place: lv.place,
-          q: item.q,
-          options: item.options.slice(),
-          answer: item.answer,
-          explain: item.explain,
-        })
+        deckQuestion(
+          {
+            id: "L" + (i + 1),
+            gate: lv.gate,
+            gateFull: lv.gate + "（" + lv.place + "）",
+            place: lv.place,
+          },
+          item
+        )
       );
     });
     return deck;
@@ -643,7 +687,10 @@
     const lockedNote = $("#locked-note");
     const phoneInput = $("#phone");
 
-    if (locked) {
+    const demoNote = $("#demo-dongpo-note");
+    if (demoNote) demoNote.hidden = !isDemoDongpo();
+
+    if (locked && !isDemoDongpo()) {
       startBtn.disabled = true;
       startBtn.textContent = "本设备已通关（仅一次）";
       lockedNote.style.display = "block";
@@ -703,12 +750,46 @@
     state.phase = "quiz";
     Sfx.hidePrompt();
     Sfx.play("tap");
+    applyStampDeck();
     syncStampTrack(); // clear stamps, set #0 is-current
     renderQuestion();
   }
 
+  function applyStampDeck() {
+    const stamps = document.querySelectorAll("#stamp-track .stamp");
+    const track = document.getElementById("stamp-track");
+    const demo = isDemoDongpo();
+    const total = (state.deck && state.deck.length) || 11;
+    const faces = ["一", "二", "三"];
+    stamps.forEach((el) => {
+      const i = Number(el.getAttribute("data-i"));
+      const face = el.querySelector(".stamp-face");
+      if (!el.dataset.face && face) el.dataset.face = face.textContent;
+      if (!el.dataset.title) el.dataset.title = el.getAttribute("title") || "";
+      if (demo) {
+        const show = i < total;
+        el.hidden = !show;
+        if (show) el.removeAttribute("aria-hidden");
+        else el.setAttribute("aria-hidden", "true");
+        if (show && face) face.textContent = faces[i] || String(i + 1);
+        if (show) el.title = "东坡关 " + (i + 1);
+      } else {
+        el.hidden = false;
+        el.removeAttribute("aria-hidden");
+        if (face && el.dataset.face) face.textContent = el.dataset.face;
+        if (el.dataset.title) el.setAttribute("title", el.dataset.title);
+      }
+    });
+    if (track) {
+      track.setAttribute(
+        "aria-label",
+        demo ? "东坡关实景样例 共" + total + "题" : "答题进度 共11关"
+      );
+    }
+  }
+
   function startQuiz() {
-    if (isDone()) {
+    if (isDone() && !isDemoDongpo()) {
       toast("本设备已答过，不可重复");
       return;
     }
@@ -786,7 +867,46 @@
     exp.className = "explain";
     exp.innerHTML = "";
     $("#quiz-actions").innerHTML = "";
+    closeLightbox();
     syncStampTrack();
+  }
+
+  function appendExplainPhoto(exp, item) {
+    const src = photoOf(item);
+    if (!src) return;
+    const alt = "东坡赤壁实景";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "explain-photo";
+    btn.setAttribute("aria-label", "查看大图：" + alt);
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = alt;
+    img.decoding = "async";
+    btn.appendChild(img);
+    btn.addEventListener("click", function () {
+      openLightbox(src, alt);
+    });
+    exp.appendChild(btn);
+  }
+
+  function openLightbox(src, alt) {
+    const lb = document.getElementById("photo-lightbox");
+    const img = document.getElementById("lb-img");
+    if (!lb || !img) return;
+    img.src = src;
+    img.alt = alt || "东坡赤壁实景";
+    lb.hidden = false;
+    document.body.classList.add("lb-open");
+  }
+
+  function closeLightbox() {
+    const lb = document.getElementById("photo-lightbox");
+    if (!lb || lb.hidden) return;
+    lb.hidden = true;
+    const img = document.getElementById("lb-img");
+    if (img) img.removeAttribute("src");
+    document.body.classList.remove("lb-open");
   }
 
   function onChoose(chosen) {
@@ -822,6 +942,7 @@
       (correct ? "" : "正确答案：" + ["A", "B", "C"][item.answer] + "　") +
       item.explain +
       "</div>";
+    appendExplainPhoto(exp, item);
 
     const actions = $("#quiz-actions");
     const isLast = state.index >= state.deck.length - 1;
@@ -845,7 +966,7 @@
     const voucher = {
       code: genCode(),
       correct,
-      total: 11,
+      total: state.deck.length,
       giftN: tier.n,
       giftLabel: tier.label,
       tierCls: tier.cls,
@@ -858,7 +979,8 @@
       })),
       gifts: [],
     };
-    saveVoucher(voucher);
+    // 东坡实景样例可反复作答，不写入一次资格锁
+    if (!isDemoDongpo()) saveVoucher(voucher);
     state.giftSelected = [];
     if (tier.n > 0) {
       renderGifts(voucher);
@@ -987,7 +1109,8 @@
 
     const scoreLine = $("#claim-score-line");
     if (scoreLine) {
-      scoreLine.innerHTML = v.correct + ' <span>/ 11 题正确</span>';
+      scoreLine.innerHTML =
+        v.correct + " <span>/ " + (v.total || 11) + " 题正确</span>";
     }
     const badge = $("#claim-tier-badge");
     if (badge) {
@@ -1102,7 +1225,7 @@
         ? "恭喜通关！"
         : "答题完成";
     $("#score-line").innerHTML =
-      v.correct + ' <span>/ 11 题正确</span>';
+      v.correct + " <span>/ " + (v.total || 11) + " 题正确</span>";
 
     const badge = $("#tier-badge");
     badge.className = "tier-badge " + (v.tierCls || giftTier(v.correct).cls);
@@ -1275,6 +1398,17 @@
   /* ========== Bind ========== */
   function init() {
     Sfx.bindUI();
+    const lb = document.getElementById("photo-lightbox");
+    if (lb) {
+      lb.addEventListener("click", function (e) {
+        if (e.target === lb || (e.target.closest && e.target.closest(".lb-close"))) {
+          closeLightbox();
+        }
+      });
+    }
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeLightbox();
+    });
     $("#btn-start").onclick = startQuiz;
     $("#btn-copy-tag").onclick = copyHashtag;
     $("#btn-copy-voucher").onclick = copyVoucher;
