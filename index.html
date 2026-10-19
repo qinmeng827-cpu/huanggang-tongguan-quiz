@@ -7,7 +7,7 @@
   <meta name="description" content="黄冈通关考　答对就出发！——热身题＋十关文旅知识答题，通关兑礼。" />
   <title>黄冈通关考　答对就出发！</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=polish2b" />
+  <link rel="stylesheet" href="styles.css?v=sfx1" />
 </head>
 <body>
   <div id="app">
@@ -47,6 +47,23 @@
           <p class="hint">仅写入通关凭证，不发送短信；正式核销以现场登记为准。</p>
         </div>
 
+        <div class="sfx-row" role="group" aria-label="答题音效">
+          <button type="button" class="sfx-toggle is-off" id="sfx-toggle" aria-pressed="false" aria-describedby="sfx-hint">
+            <span class="sfx-icon" aria-hidden="true">♪</span>
+            <span class="sfx-label">答题音效</span>
+            <span class="sfx-switch" aria-hidden="true"><span class="sfx-knob"></span></span>
+            <span class="sfx-state" id="sfx-state">关</span>
+          </button>
+          <p class="sfx-hint" id="sfx-hint">默认关；打开后点选／对错／翻页有轻声提示，可随时关掉</p>
+        </div>
+        <!-- 首次点「开始」时可选用：答题交互挂 #sfx-prompt，点「开启音效」或「保持静音」后隐藏 -->
+        <div id="sfx-prompt" class="sfx-prompt" hidden>
+          <p class="sfx-prompt-text">要开答题音效吗？轻声提示，随时可关。</p>
+          <div class="sfx-prompt-actions">
+            <button type="button" class="btn btn-ghost" id="sfx-prompt-keep">保持静音</button>
+            <button type="button" class="btn btn-primary" id="sfx-prompt-on">开启音效</button>
+          </div>
+        </div>
         <button type="button" class="btn btn-primary btn-cta" id="btn-start">开始答题</button>
         <button type="button" class="btn btn-ghost danger btn-demo-quiet" id="btn-demo-reset">演示重置</button>
         <div id="locked-note" class="locked-note" style="display:none"></div>
@@ -185,6 +202,6 @@
   </div>
 
   <div class="toast" id="toast" role="status"></div>
-  <script src="app.js?v=polish2b"></script>
+  <script src="app.js?v=sfx1"></script>
 </body>
 </html>

@@ -9,7 +9,201 @@
     DONE: "hg_tongguan_done_v1",
     VOUCHER: "hg_tongguan_voucher_v1",
     PHONE: "hg_tongguan_phone_v1",
+    SFX: "hg_tongguan_sfx",
+    SFX_ASKED: "hg_tongguan_sfx_asked",
   };
+
+
+  /* ========== Sfx (Web Audio, no BGM) ========== */
+  const Sfx = (function () {
+    let ctx = null;
+
+    function isEnabled() {
+      return localStorage.getItem(STORAGE.SFX) === "on";
+    }
+
+    function setEnabled(on) {
+      localStorage.setItem(STORAGE.SFX, on ? "on" : "off");
+      syncToggleUI();
+    }
+
+    function syncToggleUI() {
+      const btn = document.getElementById("sfx-toggle");
+      const stateEl = document.getElementById("sfx-state");
+      const on = isEnabled();
+      if (btn) {
+        btn.classList.toggle("is-on", on);
+        btn.classList.toggle("is-off", !on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      }
+      if (stateEl) stateEl.textContent = on ? "开" : "关";
+    }
+
+    function getContext() {
+      if (ctx) return ctx;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      try {
+        ctx = new AC();
+      } catch (e) {
+        ctx = null;
+      }
+      return ctx;
+    }
+
+    function unlock() {
+      try {
+        const c = getContext();
+        if (!c) return;
+        if (c.state === "suspended") {
+          c.resume().catch(function () {});
+        }
+      } catch (e) {}
+    }
+
+    function tone(c, freq, type, t0, dur, peak, endFreq) {
+      const osc = c.createOscillator();
+      const g = c.createGain();
+      osc.type = type || "sine";
+      osc.frequency.setValueAtTime(freq, t0);
+      if (endFreq != null) {
+        osc.frequency.exponentialRampToValueAtTime(Math.max(1, endFreq), t0 + dur);
+      }
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(peak, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g);
+      g.connect(c.destination);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.02);
+    }
+
+    function noiseWhoosh(c, t0) {
+      const len = Math.floor(c.sampleRate * 0.18);
+      const buf = c.createBuffer(1, len, c.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+      }
+      const src = c.createBufferSource();
+      src.buffer = buf;
+      const filter = c.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(1800, t0);
+      filter.frequency.exponentialRampToValueAtTime(400, t0 + 0.18);
+      filter.Q.value = 0.8;
+      const g = c.createGain();
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+      src.connect(filter);
+      filter.connect(g);
+      g.connect(c.destination);
+      src.start(t0);
+      src.stop(t0 + 0.2);
+    }
+
+    function play(type) {
+      if (!isEnabled()) return;
+      try {
+        unlock();
+        const c = getContext();
+        if (!c) return;
+        const t0 = c.currentTime;
+        if (type === "tap") {
+          tone(c, 880, "triangle", t0, 0.05, 0.08);
+        } else if (type === "correct") {
+          tone(c, 784, "sine", t0, 0.12, 0.14);
+          tone(c, 1175, "sine", t0 + 0.07, 0.16, 0.12);
+        } else if (type === "wrong") {
+          tone(c, 180, "sine", t0, 0.16, 0.16, 120);
+        } else if (type === "whoosh") {
+          noiseWhoosh(c, t0);
+          tone(c, 520, "triangle", t0, 0.14, 0.05, 220);
+        }
+      } catch (e) {}
+    }
+
+    function hidePrompt() {
+      const prompt = document.getElementById("sfx-prompt");
+      if (prompt) prompt.hidden = true;
+    }
+
+    function showPrompt() {
+      const prompt = document.getElementById("sfx-prompt");
+      if (prompt) prompt.hidden = false;
+    }
+
+    function needsFirstAsk() {
+      // 从未写入偏好、且未问过
+      return (
+        localStorage.getItem(STORAGE.SFX) == null &&
+        localStorage.getItem(STORAGE.SFX_ASKED) !== "1"
+      );
+    }
+
+    function markAsked() {
+      localStorage.setItem(STORAGE.SFX_ASKED, "1");
+    }
+
+    function bindUI() {
+      syncToggleUI();
+      const btn = document.getElementById("sfx-toggle");
+      if (btn) {
+        btn.addEventListener("click", function () {
+          unlock();
+          const next = !isEnabled();
+          setEnabled(next);
+          markAsked();
+          hidePrompt();
+          if (next) play("tap");
+        });
+      }
+      const onBtn = document.getElementById("sfx-prompt-on");
+      if (onBtn) {
+        onBtn.addEventListener("click", function () {
+          unlock();
+          setEnabled(true);
+          markAsked();
+          hidePrompt();
+          play("tap");
+          // 提示确认后再真正开答（由 startQuizAfterPrompt 挂）
+          if (typeof Sfx._pendingStart === "function") {
+            const fn = Sfx._pendingStart;
+            Sfx._pendingStart = null;
+            fn();
+          }
+        });
+      }
+      const keepBtn = document.getElementById("sfx-prompt-keep");
+      if (keepBtn) {
+        keepBtn.addEventListener("click", function () {
+          setEnabled(false);
+          markAsked();
+          hidePrompt();
+          if (typeof Sfx._pendingStart === "function") {
+            const fn = Sfx._pendingStart;
+            Sfx._pendingStart = null;
+            fn();
+          }
+        });
+      }
+    }
+
+    return {
+      isEnabled: isEnabled,
+      setEnabled: setEnabled,
+      syncToggleUI: syncToggleUI,
+      unlock: unlock,
+      play: play,
+      needsFirstAsk: needsFirstAsk,
+      markAsked: markAsked,
+      showPrompt: showPrompt,
+      hidePrompt: hidePrompt,
+      bindUI: bindUI,
+      _pendingStart: null,
+    };
+  })();
 
   /* ========== Question bank (exact from activity doc) ========== */
   const WARMUP = {
@@ -500,6 +694,18 @@
     if (savedPhone && phoneInput) phoneInput.value = savedPhone;
   }
 
+  function beginQuizSession() {
+    const phone = ($("#phone").value || "").trim();
+    state.phone = phone;
+    state.deck = buildDeck();
+    state.index = 0;
+    state.answers = [];
+    state.phase = "quiz";
+    Sfx.hidePrompt();
+    Sfx.play("tap");
+    renderQuestion();
+  }
+
   function startQuiz() {
     if (isDone()) {
       toast("本设备已答过，不可重复");
@@ -510,12 +716,14 @@
       toast("请输入正确的11位手机号，或留空");
       return;
     }
-    state.phone = phone;
-    state.deck = buildDeck();
-    state.index = 0;
-    state.answers = [];
-    state.phase = "quiz";
-    renderQuestion();
+    Sfx.unlock();
+    // 首次且仍为关：轻问一次，不挡后续（选完再开答）
+    if (Sfx.needsFirstAsk()) {
+      Sfx._pendingStart = beginQuizSession;
+      Sfx.showPrompt();
+      return;
+    }
+    beginQuizSession();
   }
 
   function renderQuestion() {
@@ -551,6 +759,8 @@
   function onChoose(chosen) {
     const item = state.deck[state.index];
     const correct = chosen === item.answer;
+    Sfx.play("tap");
+    Sfx.play(correct ? "correct" : "wrong");
     state.answers.push({
       gate: item.gateFull,
       correct,
@@ -585,6 +795,7 @@
       (isLast ? "查看通关结果" : "下一关") +
       "</button>";
     $("#btn-next").onclick = () => {
+      Sfx.play("whoosh");
       if (isLast) finishQuiz();
       else {
         state.index++;
@@ -719,6 +930,7 @@
       return { id: g.id, place: g.place, name: g.name };
     });
     saveVoucher(v);
+    Sfx.play("whoosh");
     renderClaim(v);
   }
 
@@ -845,6 +1057,7 @@
   function renderResult(v, fromHistory) {
     show("screen-result");
     state.phase = "result";
+    if (fromHistory) Sfx.play("whoosh");
     const emoji =
       v.giftN >= 3 ? "🏆" : v.giftN >= 2 ? "🎖️" : v.giftN >= 1 ? "🎁" : "📜";
     $("#result-emoji").textContent = emoji;
@@ -1026,6 +1239,7 @@
 
   /* ========== Bind ========== */
   function init() {
+    Sfx.bindUI();
     $("#btn-start").onclick = startQuiz;
     $("#btn-copy-tag").onclick = copyHashtag;
     $("#btn-copy-voucher").onclick = copyVoucher;
