@@ -730,3 +730,105 @@ button[hidden],
   font-size: 13px;
   font-weight: 600;
 }
+
+
+/* —— UI抛光①：三条要点＋折叠规则＋主按钮（无海报） —— */
+.rules-highlights {
+  list-style: none;
+  counter-reset: rh;
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  text-align: left;
+  background: linear-gradient(180deg, #fffbf5 0%, var(--cream-dark, #f5e6d3) 100%);
+  border: 1px solid rgba(234, 88, 12, 0.18);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(67, 20, 7, 0.06);
+}
+.rules-highlights li {
+  position: relative;
+  counter-increment: rh;
+  padding: 8px 4px 8px 36px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink);
+  border-bottom: 1px dashed rgba(234, 88, 12, 0.2);
+}
+.rules-highlights li:last-child { border-bottom: none; padding-bottom: 2px; }
+.rules-highlights li::before {
+  content: counter(rh);
+  position: absolute;
+  left: 2px;
+  top: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red-deep), var(--red));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 24px;
+  text-align: center;
+}
+
+.rules-fold {
+  text-align: left;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: var(--cream-dark, #f5e6d3);
+  overflow: hidden;
+}
+.rules-fold > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--red-deep);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.rules-fold > summary::-webkit-details-marker { display: none; }
+.rules-fold > summary::after {
+  content: "▾";
+  font-size: 12px;
+  color: var(--gold);
+  transition: transform 0.2s;
+}
+.rules-fold[open] > summary::after { transform: rotate(180deg); }
+.rules-fold .rules {
+  margin: 0;
+  border-radius: 0;
+  padding-top: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.rules-fold .rules ul { padding-bottom: 4px; }
+
+.btn-cta {
+  font-size: 18px;
+  padding: 18px 20px;
+  min-height: 56px;
+  box-shadow: 0 8px 28px rgba(234, 88, 12, 0.5);
+  margin-bottom: 10px;
+  letter-spacing: 0.14em;
+}
+
+.field-compact { margin-bottom: 12px; }
+.field-compact label { font-weight: 500; color: var(--muted); }
+.field-compact .hint { font-size: 10px; }
+
+.btn-demo-quiet {
+  margin-top: 6px;
+  padding: 8px 12px;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  opacity: 0.72;
+  background: transparent !important;
+  border-color: #fecaca !important;
+}
