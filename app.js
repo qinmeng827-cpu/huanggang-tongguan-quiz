@@ -9,35 +9,12 @@
     DONE: "hg_tongguan_done_v1",
     VOUCHER: "hg_tongguan_voucher_v1",
     PHONE: "hg_tongguan_phone_v1",
-    SFX: "hg_tongguan_sfx",
-    SFX_ASKED: "hg_tongguan_sfx_asked",
   };
 
 
-  /* ========== Sfx (Web Audio, no BGM) ========== */
+  /* ========== Sfx (Web Audio, no BGM; always on) ========== */
   const Sfx = (function () {
     let ctx = null;
-
-    function isEnabled() {
-      return localStorage.getItem(STORAGE.SFX) === "on";
-    }
-
-    function setEnabled(on) {
-      localStorage.setItem(STORAGE.SFX, on ? "on" : "off");
-      syncToggleUI();
-    }
-
-    function syncToggleUI() {
-      const btn = document.getElementById("sfx-toggle");
-      const stateEl = document.getElementById("sfx-state");
-      const on = isEnabled();
-      if (btn) {
-        btn.classList.toggle("is-on", on);
-        btn.classList.toggle("is-off", !on);
-        btn.setAttribute("aria-pressed", on ? "true" : "false");
-      }
-      if (stateEl) stateEl.textContent = on ? "开" : "关";
-    }
 
     function getContext() {
       if (ctx) return ctx;
@@ -104,7 +81,6 @@
     }
 
     function play(type) {
-      if (!isEnabled()) return;
       try {
         unlock();
         const c = getContext();
@@ -124,84 +100,9 @@
       } catch (e) {}
     }
 
-    function hidePrompt() {
-      const prompt = document.getElementById("sfx-prompt");
-      if (prompt) prompt.hidden = true;
-    }
-
-    function showPrompt() {
-      const prompt = document.getElementById("sfx-prompt");
-      if (prompt) prompt.hidden = false;
-    }
-
-    function needsFirstAsk() {
-      // 从未写入偏好、且未问过
-      return (
-        localStorage.getItem(STORAGE.SFX) == null &&
-        localStorage.getItem(STORAGE.SFX_ASKED) !== "1"
-      );
-    }
-
-    function markAsked() {
-      localStorage.setItem(STORAGE.SFX_ASKED, "1");
-    }
-
-    function bindUI() {
-      syncToggleUI();
-      const btn = document.getElementById("sfx-toggle");
-      if (btn) {
-        btn.addEventListener("click", function () {
-          unlock();
-          const next = !isEnabled();
-          setEnabled(next);
-          markAsked();
-          hidePrompt();
-          if (next) play("tap");
-        });
-      }
-      const onBtn = document.getElementById("sfx-prompt-on");
-      if (onBtn) {
-        onBtn.addEventListener("click", function () {
-          unlock();
-          setEnabled(true);
-          markAsked();
-          hidePrompt();
-          play("tap");
-          // 提示确认后再真正开答（由 startQuizAfterPrompt 挂）
-          if (typeof Sfx._pendingStart === "function") {
-            const fn = Sfx._pendingStart;
-            Sfx._pendingStart = null;
-            fn();
-          }
-        });
-      }
-      const keepBtn = document.getElementById("sfx-prompt-keep");
-      if (keepBtn) {
-        keepBtn.addEventListener("click", function () {
-          setEnabled(false);
-          markAsked();
-          hidePrompt();
-          if (typeof Sfx._pendingStart === "function") {
-            const fn = Sfx._pendingStart;
-            Sfx._pendingStart = null;
-            fn();
-          }
-        });
-      }
-    }
-
     return {
-      isEnabled: isEnabled,
-      setEnabled: setEnabled,
-      syncToggleUI: syncToggleUI,
       unlock: unlock,
       play: play,
-      needsFirstAsk: needsFirstAsk,
-      markAsked: markAsked,
-      showPrompt: showPrompt,
-      hidePrompt: hidePrompt,
-      bindUI: bindUI,
-      _pendingStart: null,
     };
   })();
 
@@ -748,7 +649,6 @@
     state.index = 0;
     state.answers = [];
     state.phase = "quiz";
-    Sfx.hidePrompt();
     Sfx.play("tap");
     applyStampDeck();
     syncStampTrack(); // clear stamps, set #0 is-current
@@ -799,12 +699,6 @@
       return;
     }
     Sfx.unlock();
-    // 首次且仍为关：轻问一次，不挡后续（选完再开答）
-    if (Sfx.needsFirstAsk()) {
-      Sfx._pendingStart = beginQuizSession;
-      Sfx.showPrompt();
-      return;
-    }
     beginQuizSession();
   }
 
@@ -1397,7 +1291,6 @@
 
   /* ========== Bind ========== */
   function init() {
-    Sfx.bindUI();
     const lb = document.getElementById("photo-lightbox");
     if (lb) {
       lb.addEventListener("click", function (e) {
