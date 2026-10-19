@@ -1204,3 +1204,63 @@ body.lb-open { overflow: hidden; }
 .quiz-card.flash-bad {
   box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.35), var(--shadow);
 }
+
+/* —— 首页海报（本地预览 poster1） —— */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border: 0;
+}
+#screen-home.home-with-poster {
+  padding: 0;
+  gap: 0;
+}
+#screen-home.home-with-poster .home-poster {
+  position: relative;
+  width: 100%;
+  height: min(48vh, 420px);
+  overflow: hidden;
+  background: #7a1f12;
+}
+#screen-home.home-with-poster .home-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+#screen-home.home-with-poster .home-panel {
+  margin-top: -28px;
+  position: relative;
+  z-index: 2;
+  border-radius: 22px 22px 20px 20px;
+  padding-top: 20px;
+  box-shadow: 0 -10px 28px rgba(90, 40, 10, 0.16), var(--shadow);
+}
+#screen-home.home-with-poster .home-panel::before {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--gold);
+  margin: 0 auto 12px;
+  opacity: 0.9;
+  /* override gold top bar from .hero::before visual clash — keep thin accent */
+}
+#screen-home.home-with-poster .home-panel.hero::before {
+  display: none;
+}
+#screen-home.home-with-poster .home-panel-kicker {
+  margin-bottom: 12px;
+}
+#screen-home.home-with-poster .footer-tip {
+  margin: 12px 14px 20px;
+}
+@media (max-width: 380px) {
+  #screen-home.home-with-poster .home-poster {
+    height: min(46vh, 380px);
+  }
+}
