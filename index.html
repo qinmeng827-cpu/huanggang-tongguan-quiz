@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#c2410c" />
+  <meta name="description" content="黄冈通关考　答对就出发！——热身题＋十关文旅知识答题，通关兑礼。" />
+  <title>黄冈通关考　答对就出发！</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- 首页 -->
+    <section id="screen-home" class="screen active">
+      <div class="hero">
+        <div class="badge">黄冈文旅 · 引流答题</div>
+        <h1>黄冈通关考<br />答对就出发！</h1>
+        <p class="sub">热身一题 · 十关巡礼 · 通关兑礼</p>
+
+        <div class="rules">
+          <h3>📋 活动规则摘要</h3>
+          <ul>
+            <li>共 <strong>11 题</strong>：1 道热身题 ＋ 10 道关卡题（对应十个县市区）</li>
+            <li>每关从 3 道备题中<strong>随机抽 1 道</strong></li>
+            <li>答对 ≥7 题可领 1 份礼品；≥9 题 2 份；全对 3 份</li>
+            <li>每账号 / 设备<strong>仅一次</strong>答题资格</li>
+            <li>礼品须<strong>本人到对应县市区核销点现场领取</strong>，不邮寄</li>
+            <li>领取时出示通关凭证、转发凭证（话题 <em>#黄冈通关考答对就出发#大美黄冈此心安处</em>）及手机号</li>
+          </ul>
+        </div>
+
+        <div class="field">
+          <label for="phone">核验手机号（演示用，可选）</label>
+          <input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="请输入11位手机号" autocomplete="tel" />
+          <p class="hint">仅写入通关凭证，不发送短信；正式核销以现场登记为准。</p>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="btn-start">开始答题</button>
+        <div id="locked-note" class="locked-note" style="display:none"></div>
+        <button type="button" class="btn btn-ghost danger" id="btn-demo-reset">演示重置（清除通关记录与手机号）</button>
+      </div>
+      <p class="footer-tip">
+        活动时间参考：答题 11.1–11.10 · 兑礼截至 2026年12月31日24:00<br />
+        礼品额度提示：总额一万份，每日释放约一千份（各县市区约百份），当日清零不顺延<br />
+        本页为演示原型，正式活动以主办方发布为准
+      </p>
+    </section>
+
+    <!-- 答题 -->
+    <section id="screen-quiz" class="screen">
+      <div class="quiz-card">
+        <div class="progress-bar"><div class="fill" id="progress-fill" style="width:0%"></div></div>
+        <div class="meta">
+          <span class="gate-tag" id="gate-tag">热身题</span>
+          <span class="step-num" id="step-num">1 / 11</span>
+        </div>
+        <p class="q-text" id="q-text"></p>
+        <div class="options" id="options"></div>
+        <div class="explain" id="explain"></div>
+        <div class="quiz-actions" id="quiz-actions"></div>
+      </div>
+    </section>
+
+    <!-- 结果 -->
+    <section id="screen-result" class="screen">
+      <div class="result-card">
+        <div class="emoji" id="result-emoji">🏆</div>
+        <h2 id="result-title">恭喜通关！</h2>
+        <div class="score-line" id="score-line">0 <span>/ 11 题正确</span></div>
+        <div class="tier-badge tier-0" id="tier-badge">—</div>
+
+        <div class="voucher">
+          <h4>✦ 通关凭证 ✦</h4>
+          <div class="row"><span class="k">凭证码</span><span class="v code" id="v-code">—</span></div>
+          <div class="row"><span class="k">得分</span><span class="v" id="v-score">—</span></div>
+          <div class="row"><span class="k">兑礼资格</span><span class="v" id="v-gift">—</span></div>
+          <div class="row"><span class="k">手机号</span><span class="v" id="v-phone">—</span></div>
+          <div class="row"><span class="k">生成时间</span><span class="v" id="v-date">—</span></div>
+          <div class="row" id="v-gifts-row" style="display:none"><span class="k">已选礼品</span><span class="v" id="v-gifts">—</span></div>
+        </div>
+        <p class="gift-history-tip" id="gift-history-tip" style="display:none"></p>
+
+        <div class="detail-list" id="detail-list" style="display:none"></div>
+
+        <div class="share-box">
+          <strong>领取前请先转发</strong><br />
+          将通关凭证转发至朋友圈 / 社交平台，并带话题：
+          <span class="hashtag" id="hashtag-text">#黄冈通关考答对就出发#大美黄冈此心安处</span>
+          到场核验：通关凭证 ＋ 转发凭证 ＋ 手机号。礼品<strong>仅限本人现场自取</strong>，不邮寄。
+        </div>
+
+        <p class="tip-quota">
+          额度提示：活动礼品总额一万份；每日释放约一千份（每县市区约一百份），当日清零不顺延。具体以各县市区核销点当日库存为准。
+        </p>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="btn-pick-gifts" hidden>去选择礼品</button>
+          <button type="button" class="btn btn-gold" id="btn-copy-tag">复制话题标签</button>
+          <button type="button" class="btn btn-primary" id="btn-copy-voucher">复制通关凭证全文</button>
+          <button type="button" class="btn btn-ghost" id="btn-back-home">返回首页</button>
+        </div>
+      </div>
+      <p class="footer-tip">演示原型 · 黄冈文旅</p>
+    </section>
+
+    <!-- 选礼（有兑礼资格时） -->
+    <section id="screen-gifts" class="screen">
+      <div class="gift-card">
+        <h2>选择礼品领取点</h2>
+        <p class="gift-hint">可按资格选取 <strong id="gift-quota">0</strong> 份；选项对应黄冈十县市区<br />具体品类以各地核销点备案为准</p>
+        <p class="gift-count">已选 <span class="n" id="gift-picked">0</span> / <span id="gift-max">0</span> · 还可选 <span class="n" id="gift-remain">0</span> 份</p>
+        <div class="gift-grid" id="gift-grid">
+          <!-- 由 app.js 填充十县市区选项 -->
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="btn-gift-confirm" disabled>确认选择</button>
+          <button type="button" class="btn btn-ghost" id="btn-gift-skip">返回结果页</button>
+        </div>
+      </div>
+      <p class="footer-tip">多份礼品须分别到对应县市区现场领取 · 不邮寄</p>
+    </section>
+
+    <!-- 领取须知 -->
+    <section id="screen-claim" class="screen">
+      <div class="claim-card">
+        <div class="emoji" id="claim-emoji">🎉</div>
+        <h2 id="claim-title">恭喜通过</h2>
+        <div class="score-line" id="claim-score-line">0 <span>/ 11 题正确</span></div>
+        <div class="tier-badge tier-0" id="claim-tier-badge">—</div>
+
+        <div class="claim-body" id="claim-body">
+          请于 <span class="deadline" id="claim-deadline">2026年12月31日24:00</span> 前，本人前往所选礼品所属县市区的<strong>指定游客中心／核销点</strong>现场领取。
+          <p class="place-line" id="claim-places"></p>
+        </div>
+        <div class="claim-picks" id="claim-picks-box">
+          <h4>已选礼品／领取点</h4>
+          <ul id="claim-pick-list"></ul>
+        </div>
+        <p class="claim-warn" id="claim-warn">
+          逾期未到场领取的，名额自动失效，不予补发、不予折现。礼品仅限本人现场自取，不邮寄。领取须出示通关凭证、转发凭证并核验手机号。
+        </p>
+
+        <div class="voucher" id="claim-voucher-box">
+          <h4>✦ 通关凭证 ✦</h4>
+          <div class="row"><span class="k">凭证码</span><span class="v code" id="c-code">—</span></div>
+          <div class="row"><span class="k">得分</span><span class="v" id="c-score">—</span></div>
+          <div class="row"><span class="k">兑礼资格</span><span class="v" id="c-gift">—</span></div>
+          <div class="row"><span class="k">手机号</span><span class="v" id="c-phone">—</span></div>
+          <div class="row"><span class="k">生成时间</span><span class="v" id="c-date">—</span></div>
+        </div>
+
+        <div class="detail-list" id="claim-detail-list" style="display:none"></div>
+
+        <div class="share-box">
+          <strong>领取前请先转发</strong><br />
+          将通关凭证转发至朋友圈 / 社交平台，并带话题：
+          <span class="hashtag" id="claim-hashtag">#黄冈通关考答对就出发#大美黄冈此心安处</span>
+          到场核验：通关凭证 ＋ 转发凭证 ＋ 手机号。礼品<strong>仅限本人现场自取</strong>，不邮寄。
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-gold" id="btn-claim-copy-tag">复制话题标签</button>
+          <button type="button" class="btn btn-primary" id="btn-claim-copy-voucher">复制通关凭证全文</button>
+          <button type="button" class="btn btn-gold" id="btn-claim-copy">复制领取须知</button>
+          <button type="button" class="btn btn-ghost" id="btn-claim-voucher">查看通关凭证卡</button>
+          <button type="button" class="btn btn-ghost" id="btn-claim-home">返回首页</button>
+        </div>
+      </div>
+      <p class="footer-tip">演示原型 · 兑礼截至 2026年12月31日24:00</p>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
