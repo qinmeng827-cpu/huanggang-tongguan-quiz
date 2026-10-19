@@ -7,7 +7,7 @@
   <meta name="description" content="黄冈通关考　答对就出发！——热身题＋十关文旅知识答题，通关兑礼。" />
   <title>黄冈通关考　答对就出发！</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=sfx1" />
+  <link rel="stylesheet" href="styles.css?v=polish3" />
 </head>
 <body>
   <div id="app">
@@ -78,7 +78,21 @@
     <!-- 答题 -->
     <section id="screen-quiz" class="screen">
       <div class="quiz-card">
-        <div class="progress-bar"><div class="fill" id="progress-fill" style="width:0%"></div></div>
+        <div class="progress-bar" aria-hidden="true"><div class="fill" id="progress-fill" style="width:0%"></div></div>
+        <!-- 进度印章：交互按 state.answers 给 .stamp 加 is-done is-ok|is-bad；当前关 is-current -->
+        <ol class="stamp-track" id="stamp-track" aria-label="答题进度 共11关">
+          <li class="stamp is-current" data-i="0" title="热身题"><span class="stamp-face">热</span></li>
+          <li class="stamp" data-i="1" title="黄州"><span class="stamp-face">黄</span></li>
+          <li class="stamp" data-i="2" title="团风"><span class="stamp-face">团</span></li>
+          <li class="stamp" data-i="3" title="红安"><span class="stamp-face">红</span></li>
+          <li class="stamp" data-i="4" title="麻城"><span class="stamp-face">麻</span></li>
+          <li class="stamp" data-i="5" title="罗田"><span class="stamp-face">罗</span></li>
+          <li class="stamp" data-i="6" title="英山"><span class="stamp-face">英</span></li>
+          <li class="stamp" data-i="7" title="浠水"><span class="stamp-face">浠</span></li>
+          <li class="stamp" data-i="8" title="蕲春"><span class="stamp-face">蕲</span></li>
+          <li class="stamp" data-i="9" title="武穴"><span class="stamp-face">武</span></li>
+          <li class="stamp" data-i="10" title="黄梅"><span class="stamp-face">梅</span></li>
+        </ol>
         <div class="meta">
           <span class="gate-tag" id="gate-tag">热身题</span>
           <span class="step-num" id="step-num">1 / 11</span>
@@ -202,6 +216,6 @@
   </div>
 
   <div class="toast" id="toast" role="status"></div>
-  <script src="app.js?v=sfx1"></script>
+  <script src="app.js?v=polish3"></script>
 </body>
 </html>

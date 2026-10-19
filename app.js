@@ -703,6 +703,7 @@
     state.phase = "quiz";
     Sfx.hidePrompt();
     Sfx.play("tap");
+    syncStampTrack(); // clear stamps, set #0 is-current
     renderQuestion();
   }
 
@@ -724,6 +725,37 @@
       return;
     }
     beginQuizSession();
+  }
+
+
+  function syncStampTrack() {
+    const stamps = document.querySelectorAll("#stamp-track .stamp");
+    if (!stamps.length) return;
+    const answers = state.answers || [];
+    const current = state.index;
+    stamps.forEach((el) => {
+      const i = Number(el.getAttribute("data-i"));
+      el.classList.remove("is-current", "is-ok", "is-bad");
+      if (i < answers.length) {
+        if (answers[i].correct) el.classList.add("is-ok");
+        else el.classList.add("is-bad");
+      } else if (i === current) {
+        el.classList.add("is-current");
+      }
+    });
+  }
+
+  function flashQuizCard(ok) {
+    const card = $(".quiz-card");
+    if (!card) return;
+    card.classList.remove("flash-ok", "flash-bad");
+    // force reflow so re-triggering animation works
+    void card.offsetWidth;
+    card.classList.add(ok ? "flash-ok" : "flash-bad");
+    clearTimeout(flashQuizCard._t);
+    flashQuizCard._t = setTimeout(() => {
+      card.classList.remove("flash-ok", "flash-bad");
+    }, 500);
   }
 
   function renderQuestion() {
@@ -754,6 +786,7 @@
     exp.className = "explain";
     exp.innerHTML = "";
     $("#quiz-actions").innerHTML = "";
+    syncStampTrack();
   }
 
   function onChoose(chosen) {
@@ -767,6 +800,8 @@
       chosen,
       answer: item.answer,
     });
+    syncStampTrack();
+    flashQuizCard(correct);
 
     const opts = document.querySelectorAll("#options .opt");
     opts.forEach((el, i) => {

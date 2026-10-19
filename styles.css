@@ -1051,3 +1051,168 @@ button[hidden],
   border-color: rgba(154, 107, 74, 0.35);
   color: var(--ink-soft);
 }
+
+
+/* —— UI抛光③：进度印章条＋轻反馈 —— */
+.stamp-track {
+  list-style: none;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 4px;
+  margin: 0 0 12px;
+  padding: 2px 0 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.stamp-track::-webkit-scrollbar { display: none; }
+
+.stamp {
+  flex: 1 1 0;
+  min-width: 28px;
+  max-width: 36px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  position: relative;
+}
+
+.stamp-face {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(217, 119, 6, 0.4);
+  background: #fff7ed;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+/* 未到 */
+.stamp.is-todo .stamp-face,
+.stamp:not(.is-current):not(.is-ok):not(.is-bad) .stamp-face {
+  opacity: 0.72;
+}
+
+/* 当前关 */
+.stamp.is-current .stamp-face {
+  opacity: 1;
+  border-color: var(--red);
+  background: linear-gradient(145deg, #fff7ed, #fed7aa);
+  color: var(--red-deep);
+  box-shadow:
+    0 0 0 3px rgba(234, 88, 12, 0.22),
+    inset 0 0 0 1px rgba(255, 247, 237, 0.8);
+  animation: stampPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes stampPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp.is-current .stamp-face { animation: none; }
+  .stamp.is-ok .stamp-face,
+  .stamp.is-bad .stamp-face,
+  .explain.show,
+  .opt.correct,
+  .opt.wrong { animation: none !important; }
+}
+
+/* 答对：朱红印章感 */
+.stamp.is-ok .stamp-face {
+  opacity: 1;
+  border-color: #b45309;
+  background: radial-gradient(circle at 35% 30%, #fb923c, #c2410c 70%);
+  color: #fff7ed;
+  box-shadow: 0 2px 6px rgba(154, 52, 18, 0.35);
+  animation: stampPop 0.35s ease;
+}
+.stamp.is-ok .stamp-face::after {
+  content: "✓";
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ok);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  border: 1.5px solid #fff7ed;
+}
+
+/* 答错：淡墨印 */
+.stamp.is-bad .stamp-face {
+  opacity: 1;
+  border-color: #9a6b4a;
+  background: linear-gradient(145deg, #ffedd5, #e7d5c3);
+  color: var(--bad);
+  animation: stampPop 0.35s ease;
+}
+.stamp.is-bad .stamp-face::after {
+  content: "✗";
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bad);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  border: 1.5px solid #fff7ed;
+}
+
+@keyframes stampPop {
+  0% { transform: scale(0.7); }
+  70% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* 轻反馈：选项／解析微弹 */
+.opt.correct { animation: optFlashOk 0.45s ease; }
+.opt.wrong { animation: optFlashBad 0.45s ease; }
+@keyframes optFlashOk {
+  0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(63, 98, 18, 0.35); }
+  60% { transform: scale(1.01); box-shadow: 0 0 0 6px rgba(63, 98, 18, 0); }
+  100% { transform: none; box-shadow: none; }
+}
+@keyframes optFlashBad {
+  0%, 40%, 80% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  100% { transform: none; }
+}
+
+.explain.show.ok,
+.explain.show.bad {
+  animation: explainIn 0.35s ease;
+}
+@keyframes explainIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* 答题卡瞬时描边闪（交互可短时加 .flash-ok / .flash-bad） */
+.quiz-card.flash-ok {
+  box-shadow: 0 0 0 3px rgba(63, 98, 18, 0.45), var(--shadow);
+}
+.quiz-card.flash-bad {
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.35), var(--shadow);
+}
